@@ -1,26 +1,12 @@
 {
   "version": "7",
-  "dialect": "mysql",
+  "dialect": "postgresql",
   "entries": [
     {
       "idx": 0,
-      "version": "5",
-      "when": 1760680322074,
-      "tag": "0000_nosy_mac_gargan",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1760680369301,
-      "tag": "0001_nasty_trauma",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1761225055526,
-      "tag": "0002_milky_warbird",
+      "version": "7",
+      "when": 1762422677129,
+      "tag": "0000_add-api-extra-fields",
       "breakpoints": true
     }
   ]
