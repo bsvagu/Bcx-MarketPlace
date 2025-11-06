@@ -42,6 +42,13 @@ export default function ApiDetails() {
     { enabled: isAuthenticated && !!id }
   );
 
+  // Helpers for Technical Details UI
+  const parseList = (value?: string) =>
+    (value || "")
+      .split(/[;,\n]/g)
+      .map((v) => v.trim())
+      .filter((v) => v.length > 0);
+
   const subscribeMutation = trpc.subscriptions.subscribe.useMutation({
     onSuccess: (data) => {
       toast.success("Successfully subscribed to API!");
@@ -352,6 +359,123 @@ export default function ApiDetails() {
 
               <Card>
                 <CardHeader>
+                  <CardTitle>Technical Details</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {api.businessUnit && (
+                      <div>
+                        <p className="text-sm text-muted-foreground">Business Unit</p>
+                        <p className="font-semibold break-words">{api.businessUnit}</p>
+                      </div>
+                    )}
+                    {api.serviceName && (
+                      <div>
+                        <p className="text-sm text-muted-foreground">Service Name</p>
+                        <p className="font-semibold break-words">{api.serviceName}</p>
+                      </div>
+                    )}
+                    {api.clientsImpacted && parseList(api.clientsImpacted).length > 0 && (
+                      <div>
+                        <p className="text-sm text-muted-foreground mb-2">Clients Impacted</p>
+                        <div className="flex flex-wrap gap-2">
+                          {parseList(api.clientsImpacted).map((item, idx) => (
+                            <Badge key={`clients-${idx}`} variant="secondary" className="whitespace-normal break-words">
+                              {item}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {api.backends && parseList(api.backends).length > 0 && (
+                      <div className="md:col-span-2">
+                        <p className="text-sm text-muted-foreground mb-2">Backends</p>
+                        <div className="flex flex-wrap gap-2">
+                          {parseList(api.backends).map((item, idx) => (
+                            <Badge key={`backend-${idx}`} variant="outline" className="whitespace-normal break-words">
+                              {item}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {api.complexity && (
+                      <div>
+                        <p className="text-sm text-muted-foreground">Complexity</p>
+                        <p className="font-semibold break-words">{api.complexity}</p>
+                      </div>
+                    )}
+                    {api.serviceType && (
+                      <div>
+                        <p className="text-sm text-muted-foreground">Service Type</p>
+                        <p className="font-semibold break-words">{api.serviceType}</p>
+                      </div>
+                    )}
+                    {api.integrationType && (
+                      <div>
+                        <p className="text-sm text-muted-foreground">Integration Type</p>
+                        <p className="font-semibold break-words">{api.integrationType}</p>
+                      </div>
+                    )}
+                    {api.serviceDescription && (
+                      <div className="md:col-span-2">
+                        <p className="text-sm text-muted-foreground">Service Description</p>
+                        <p className="font-semibold break-words">{api.serviceDescription}</p>
+                      </div>
+                    )}
+                    {api.swaggerUrl && (
+                      <div>
+                        <p className="text-sm text-muted-foreground">Swagger URL</p>
+                        <a href={api.swaggerUrl} target="_blank" rel="noreferrer" className="font-semibold text-primary break-words hover:underline">
+                          {api.swaggerUrl}
+                        </a>
+                      </div>
+                    )}
+                    {api.apiVersion && (
+                      <div>
+                        <p className="text-sm text-muted-foreground">API Version</p>
+                        <p className="font-semibold break-words">{api.apiVersion}</p>
+                      </div>
+                    )}
+                    {api.authRequired !== null && api.authRequired !== undefined && (
+                      <div>
+                        <p className="text-sm text-muted-foreground">Auth Required</p>
+                        <p className="font-semibold">{api.authRequired ? "Yes" : "No"}</p>
+                      </div>
+                    )}
+                    {api.responseFormat && (
+                      <div>
+                        <p className="text-sm text-muted-foreground">Response Format</p>
+                        <p className="font-semibold break-words">{api.responseFormat}</p>
+                      </div>
+                    )}
+                    {api.timeout && (
+                      <div>
+                        <p className="text-sm text-muted-foreground">Timeout</p>
+                        <p className="font-semibold break-words">{api.timeout}</p>
+                      </div>
+                    )}
+                    {api.parameters && (
+                      <div className="md:col-span-2">
+                        <p className="text-sm text-muted-foreground">Parameters</p>
+                        <pre className="bg-gray-100 p-3 rounded-md text-xs overflow-auto max-h-64">
+                            {(() => {
+                              try {
+                                const parsed = typeof api.parameters === 'string' ? JSON.parse(api.parameters) : api.parameters;
+                                return JSON.stringify(parsed, null, 2);
+                              } catch {
+                                return String(api.parameters);
+                              }
+                            })()}
+                        </pre>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
                   <CardTitle>Security & Compliance</CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -454,18 +578,20 @@ export default function ApiDetails() {
                   {isSubscribed && (
                     <div>
                       <Label className="mb-2 block">Your API Key</Label>
+                      {(() => { const apiKey = (subscriptionData as any)?.subscription?.apiKey as string | undefined; return (
                       <div className="flex gap-2">
                         <code className="flex-1 bg-gray-100 p-3 rounded-md text-sm">
-                          {subscriptionData?.apiKey || "Loading..."}
+                          {apiKey || "Loading..."}
                         </code>
                         <Button
                           variant="outline"
                           size="icon"
-                          onClick={() => copyToClipboard(subscriptionData?.apiKey || "", "key")}
+                          onClick={() => copyToClipboard(apiKey || "", "key")}
                         >
                           {copiedKey ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                         </Button>
                       </div>
+                      ); })()}
                       <p className="text-sm text-muted-foreground mt-2">
                         Keep your API key secure. Do not share it publicly.
                       </p>
@@ -489,4 +615,3 @@ export default function ApiDetails() {
     </div>
   );
 }
-
