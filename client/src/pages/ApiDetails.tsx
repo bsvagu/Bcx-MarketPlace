@@ -164,6 +164,9 @@ export default function ApiDetails() {
                   <Badge variant={api.status === "active" ? "default" : "secondary"}>
                     {api.status}
                   </Badge>
+                  {api.area && (
+                    <Badge variant="default">{api.area}</Badge>
+                  )}
                   {api.featured && <Badge variant="outline">Featured</Badge>}
                 </div>
                 <p className="text-muted-foreground mb-4">{api.description}</p>

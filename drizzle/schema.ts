@@ -35,6 +35,7 @@ export const apis = pgTable("apis", {
   // 🆕 NEW FIELD - Added to store API parameters from PDF/Swagger
   // Stores JSON array of parameter objects: [{ name, type, required, description }, ...]
   parameters: text("parameters"),
+  area: varchar("area", { length: 255 })
 });
  
 export type Api = typeof apis.$inferSelect;
