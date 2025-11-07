@@ -1,5 +1,5 @@
 {
-  "id": "ed7134c4-5f44-4f47-9f4f-a77c47435217",
+  "id": "eb936054-c1a2-461a-95f4-a5b2b3439829",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -186,6 +186,12 @@
         "parameters": {
           "name": "parameters",
           "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "area": {
+          "name": "area",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": false
         }

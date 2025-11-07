@@ -8,6 +8,13 @@
       "when": 1762422677129,
       "tag": "0000_add-api-extra-fields",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1762520221053,
+      "tag": "0001_silent_king_bedlam",
+      "breakpoints": true
     }
   ]
 }

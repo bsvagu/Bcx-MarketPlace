@@ -14,16 +14,23 @@ export default function ApiList() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
+  const [selectedArea, setSelectedArea] = useState<string>("all");
 
   const { data: apis, isLoading: loadingApis } = trpc.apis.list.useQuery();
   const { data: categories, isLoading: loadingCategories } = trpc.categories.list.useQuery();
+
+  // Get unique areas from APIs (excluding null/undefined)
+  const availableAreas = Array.from(
+    new Set(apis?.map(api => api.area).filter((area): area is string => !!area) || [])
+  ).sort();
 
   const filteredApis = apis?.filter((api) => {
     const matchesSearch = api.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          api.description?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === "all" || api.categoryId === selectedCategory;
     const matchesStatus = selectedStatus === "all" || api.status === selectedStatus;
-    return matchesSearch && matchesCategory && matchesStatus;
+    const matchesArea = selectedArea === "all" || api.area === selectedArea;
+    return matchesSearch && matchesCategory && matchesStatus && matchesArea;
   });
 
   return (
@@ -48,7 +55,7 @@ export default function ApiList() {
               <Filter className="w-5 h-5 text-muted-foreground" />
               <h2 className="font-semibold">Filter APIs</h2>
             </div>
-            <div className="grid md:grid-cols-3 gap-4">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
@@ -58,7 +65,7 @@ export default function ApiList() {
                   className="pl-10"
                 />
               </div>
-              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              {/* <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                 <SelectTrigger>
                   <SelectValue placeholder="All Categories" />
                 </SelectTrigger>
@@ -70,8 +77,8 @@ export default function ApiList() {
                     </SelectItem>
                   ))}
                 </SelectContent>
-              </Select>
-              <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+              </Select> */}
+              {/* <Select value={selectedStatus} onValueChange={setSelectedStatus}>
                 <SelectTrigger>
                   <SelectValue placeholder="All Status" />
                 </SelectTrigger>
@@ -80,6 +87,19 @@ export default function ApiList() {
                   <SelectItem value="active">Active</SelectItem>
                   <SelectItem value="beta">Beta</SelectItem>
                   <SelectItem value="deprecated">Deprecated</SelectItem>
+                </SelectContent>
+              </Select> */}
+              <Select value={selectedArea} onValueChange={setSelectedArea}>
+                <SelectTrigger>
+                  <SelectValue placeholder="All Areas" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Areas</SelectItem>
+                  {availableAreas.map((area) => (
+                    <SelectItem key={area} value={area}>
+                      {area}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -116,14 +136,25 @@ export default function ApiList() {
               {filteredApis.map((api) => (
                 <Link key={api.id} href={`/apis/${api.id}`}>
                   <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
-                    <CardHeader>
-                      <div className="flex items-start justify-between mb-2">
-                        <CardTitle className="text-lg">{api.name}</CardTitle>
-                        <Badge variant={api.status === "active" ? "default" : "secondary"}>
-                          {api.status}
-                        </Badge>
+                    <CardHeader className="pb-3">
+                      <div className="flex items-start justify-between gap-3 mb-2">
+                        <CardTitle className="text-lg font-semibold line-clamp-2 flex-1 min-w-0 break-words pr-2" style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
+                          {api.name}
+                        </CardTitle>
+                        <div className="flex flex-col gap-1.5 flex-shrink-0">
+                          {/* <Badge variant={api.status === "active" ? "default" : "secondary"} className="whitespace-nowrap text-xs">
+                            {api.status}
+                          </Badge> */}
+                          {api.area && (
+                            <Badge variant="default" className="whitespace-nowrap text-xs">
+                              {api.area}
+                            </Badge>
+                          )}
+                        </div>
                       </div>
-                      <CardDescription className="line-clamp-2">{api.description}</CardDescription>
+                      <CardDescription className="line-clamp-2 text-sm text-muted-foreground break-words" style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
+                        {api.description}
+                      </CardDescription>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-2 text-sm">
@@ -160,6 +191,7 @@ export default function ApiList() {
                   setSearchQuery("");
                   setSelectedCategory("all");
                   setSelectedStatus("all");
+                  setSelectedArea("all");
                 }}
               >
                 Clear Filters
